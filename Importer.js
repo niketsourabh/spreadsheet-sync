@@ -5,6 +5,7 @@ const Core = require("@actions/core");
 const rest_1 = require("@octokit/rest");
 const GitHub = require("@actions/github");
 const googleapis_1 = require("googleapis");
+const auth_action_1 = require("@octokit/auth-action");
 class Importer {
     async start() {
         var _a, _b, _c, _d;
@@ -17,10 +18,12 @@ class Importer {
                 throw new Error("🚨 Some Inputs missed. Please check project README.");
             }
             Core.info("Auth with GitHub Token...");
-            const octokit = new rest_1.Octokit();
-            const { createActionAuth } = require("@octokit/auth-action");
-            const authGit = createActionAuth();
-            const authentication = await authGit();
+            const authGit = auth_action_1.createActionAuth();
+            const { token } = await authGit();
+            Core.info("Token: " + token);
+            const octokit = new rest_1.Octokit({
+                auth: token,
+            });
             Core.info("Done.");
             Core.endGroup();
             Core.startGroup("📑 Getting all Issues in repository...");
@@ -33,7 +36,7 @@ class Importer {
                     owner: GitHub.context.repo.owner,
                     repo: GitHub.context.repo.repo,
                     state: "all",
-                    page
+                    page: page
                 });
                 Core.info(`There are ${issuesPage.data.length} Issues...`);
                 issuesData = issuesData.concat(issuesPage.data);
@@ -125,7 +128,7 @@ class Importer {
             Core.info("☑️ Done!");
         }
         catch (error) {
-            Core.setFailed(error);
+            Core.setFailed(JSON.stringify(error));
         }
     }
 }

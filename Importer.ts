@@ -2,6 +2,7 @@ import * as Core from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import * as GitHub from "@actions/github";
 import { google } from "googleapis"
+import{ createActionAuth } from"@octokit/auth-action"
 
 export class Importer {
 
@@ -22,10 +23,13 @@ export class Importer {
                 throw new Error("🚨 Some Inputs missed. Please check project README.")
             }
             Core.info("Auth with GitHub Token...")
-            const octokit = new Octokit()
-            const { createActionAuth } = require("@octokit/auth-action")
             const authGit = createActionAuth()
-            const authentication = await authGit()
+            const {token} = await authGit()
+            Core.info("Token: "+  token)
+            const octokit = new Octokit({
+                auth: token,
+            })
+            
             Core.info("Done.")
             Core.endGroup()
 
@@ -39,7 +43,7 @@ export class Importer {
                     owner: GitHub.context.repo.owner,
                     repo: GitHub.context.repo.repo,
                     state: "all",
-                    page
+                    page: page
                 });
                 Core.info(`There are ${issuesPage.data.length} Issues...`)
                 issuesData = issuesData.concat(issuesPage.data)
@@ -135,7 +139,7 @@ export class Importer {
             Core.info("☑️ Done!")
 
         } catch (error) {
-            Core.setFailed(error)
+            Core.setFailed(JSON.stringify(error))
         }
     }
 }
