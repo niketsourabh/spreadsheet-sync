@@ -23,6 +23,9 @@ export class Importer {
             }
             Core.info("Auth with GitHub Token...")
             const octokit = new Octokit()
+            const { createActionAuth } = require("@octokit/auth-action")
+            const authGit = createActionAuth()
+            const authentication = await authGit()
             Core.info("Done.")
             Core.endGroup()
 
