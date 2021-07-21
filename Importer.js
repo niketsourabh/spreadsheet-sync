@@ -92,6 +92,7 @@ class Importer {
                     (_b = value.milestone) === null || _b === void 0 ? void 0 : _b.state,
                     (_c = value.milestone) === null || _c === void 0 ? void 0 : _c.due_on,
                     (_d = value.milestone) === null || _d === void 0 ? void 0 : _d.html_url,
+                    value.body,
                 ]);
             }
             issueSheetsData.forEach(value => {
@@ -108,7 +109,7 @@ class Importer {
                     majorDimension: "ROWS",
                     range: sheetName + "!A1:1",
                     values: [
-                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI"]
+                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI", "Description"]
                     ]
                 }
             });
