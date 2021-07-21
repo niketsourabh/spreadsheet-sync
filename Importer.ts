@@ -102,6 +102,7 @@ export class Importer {
                     value.milestone?.state,
                     value.milestone?.due_on,
                     value.milestone?.html_url,
+                    value.body,
                 ])
             }
             issueSheetsData.forEach(value => {
@@ -119,7 +120,7 @@ export class Importer {
                     majorDimension: "ROWS",
                     range: sheetName + "!A1:1",
                     values: [
-                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI"]
+                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI", "Description"]
                     ]
                 }
             })
