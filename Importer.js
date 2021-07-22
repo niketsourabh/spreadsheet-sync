@@ -14,7 +14,7 @@ class Importer {
             const serviceAccountCredentials = Core.getInput(Importer.INPUT_SERVICE_ACCOUNT_JSON);
             const documentId = Core.getInput(Importer.INPUT_DOCUMENT_ID);
             const sheetName = Core.getInput(Importer.INPUT_SHEET_NAME);
-            const mode = Core.getInput(Importer.INPUT_MODE);
+            const mode = Core.getInput(Importer.INPUT_MODE) || 'all';
             Core.info("Running mode = " + mode);
             if (!serviceAccountCredentials || !documentId || !sheetName) {
                 throw new Error("🚨 Some Inputs missed. Please check project README.");
@@ -148,5 +148,5 @@ Importer.LOG_BULLET_ITEM = "·️";
 Importer.INPUT_SERVICE_ACCOUNT_JSON = "google-api-service-account-credentials";
 Importer.INPUT_DOCUMENT_ID = "document-id";
 Importer.INPUT_SHEET_NAME = "sheet-name";
-Importer.INPUT_MODE = 'all';
+Importer.INPUT_MODE = 'mode';
 //# sourceMappingURL=Importer.js.map

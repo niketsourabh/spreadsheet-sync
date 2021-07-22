@@ -11,7 +11,7 @@ export class Importer {
     public static INPUT_SERVICE_ACCOUNT_JSON = "google-api-service-account-credentials"
     public static INPUT_DOCUMENT_ID = "document-id"
     public static INPUT_SHEET_NAME = "sheet-name"
-    public static INPUT_MODE = 'all'
+    public static INPUT_MODE = 'mode'
 
     public async start(): Promise<void> {
         try {
@@ -19,7 +19,7 @@ export class Importer {
             const serviceAccountCredentials = Core.getInput(Importer.INPUT_SERVICE_ACCOUNT_JSON)
             const documentId = Core.getInput(Importer.INPUT_DOCUMENT_ID)
             const sheetName = Core.getInput(Importer.INPUT_SHEET_NAME)
-            const mode = Core.getInput(Importer.INPUT_MODE)
+            const mode = Core.getInput(Importer.INPUT_MODE) || 'all'
             Core.info("Running mode = " + mode)
             if (!serviceAccountCredentials || !documentId || !sheetName) {
                 throw new Error("🚨 Some Inputs missed. Please check project README.")
