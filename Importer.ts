@@ -93,7 +93,7 @@ export class Importer {
                     }
                 }
                 if (mode == 'milestone_issues') {
-                    if ((!value.milestone || value.milestone.state != 'open') || !value.pull_request) {
+                    if ((!value.milestone || value.milestone.state != 'open')) {
                         continue;
                     }
                 }
