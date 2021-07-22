@@ -76,11 +76,13 @@ class Importer {
             issuesData;
             var issueSheetsData = [];
             for (const value of issuesData) {
-                if (mode == 'issues' && !value.pull_request) {
+                if (mode == 'issues' && !value.hasOwnProperty('pull_request')) {
                     continue;
                 }
-                if (mode == 'milestone_issues' && !value.pull_request && (value.milestone && value.milestone.state == 'open')) {
-                    continue;
+                if (mode == 'milestone_issues') {
+                    if (!value.hasOwnProperty('pull_request') && (value.milestone && value.milestone.state != 'open')) {
+                        continue;
+                    }
                 }
                 var labels = [];
                 for (const label of value.labels) {
