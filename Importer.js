@@ -82,10 +82,8 @@ class Importer {
                     }
                 }
                 if (mode == 'milestone_issues') {
-                    if (!value.pull_request) {
-                        if (!value.milestone || value.milestone.state != 'open') {
-                            continue;
-                        }
+                    if ((!value.milestone || value.milestone.state != 'open') || !value.pull_request) {
+                        continue;
                     }
                 }
                 var labels = [];
