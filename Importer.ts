@@ -88,12 +88,12 @@ export class Importer {
             var issueSheetsData = [];
             for (const value of issuesData) {
                 if (mode == 'issues') {
-                    if (!value.pull_request) {
+                    if (value.pull_request) {
                         continue;
                     }
                 }
                 if (mode == 'milestone_issues') {
-                    if ((!value.milestone || value.milestone.state != 'open') && !value.pull_request) {
+                    if ((!value.milestone || value.milestone.state != 'open') || value.pull_request) {
                         continue;
                     }
                 }

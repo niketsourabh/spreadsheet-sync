@@ -64,3 +64,10 @@ More info: https://docs.github.com/en/free-pro-team@latest/actions/reference/enc
 ### 6. Look at the exported Issues data in your Sheets document
 
 ![](https://i.imgur.com/U2t3nmo.png)
+
+## Modes
+There are few modes of exporting data to Google Sheet
+
+* `all` = Export all types of issues.
+* `issues` = Export issues excluding pull request
+* `milestone_issues` = Export all issues within active milestones
