@@ -14,6 +14,8 @@ class Importer {
             const serviceAccountCredentials = Core.getInput(Importer.INPUT_SERVICE_ACCOUNT_JSON);
             const documentId = Core.getInput(Importer.INPUT_DOCUMENT_ID);
             const sheetName = Core.getInput(Importer.INPUT_SHEET_NAME);
+            const mode = Core.getInput(Importer.INPUT_MODE) || 'all';
+            Core.info("Running mode = " + mode);
             if (!serviceAccountCredentials || !documentId || !sheetName) {
                 throw new Error("🚨 Some Inputs missed. Please check project README.");
             }
@@ -70,8 +72,20 @@ class Importer {
             Core.info("Done.");
             Core.endGroup();
             Core.startGroup(`🔨 Form Issues data for Sheets format...`);
+            Core.info("Count issues = " + issuesData.length);
+            issuesData;
             var issueSheetsData = [];
             for (const value of issuesData) {
+                if (mode == 'issues') {
+                    if (value.pull_request) {
+                        continue;
+                    }
+                }
+                if (mode == 'milestone_issues') {
+                    if ((!value.milestone || value.milestone.state != 'open') || value.pull_request) {
+                        continue;
+                    }
+                }
                 var labels = [];
                 for (const label of value.labels) {
                     labels.push(label.name);
@@ -93,6 +107,7 @@ class Importer {
                     (_c = value.milestone) === null || _c === void 0 ? void 0 : _c.due_on,
                     (_d = value.milestone) === null || _d === void 0 ? void 0 : _d.html_url,
                     value.body,
+                    value.closed_at,
                 ]);
             }
             issueSheetsData.forEach(value => {
@@ -109,11 +124,12 @@ class Importer {
                     majorDimension: "ROWS",
                     range: sheetName + "!A1:1",
                     values: [
-                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI", "Description"]
+                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI", "Description", "Closed"]
                     ]
                 }
             });
             Core.info("Appending data...");
+            Core.info("Count appending issues = " + issueSheetsData.length);
             await sheets.spreadsheets.values.append({
                 spreadsheetId: documentId,
                 range: sheetName + "!A1:1",
@@ -139,4 +155,5 @@ Importer.LOG_BULLET_ITEM = "·️";
 Importer.INPUT_SERVICE_ACCOUNT_JSON = "google-api-service-account-credentials";
 Importer.INPUT_DOCUMENT_ID = "document-id";
 Importer.INPUT_SHEET_NAME = "sheet-name";
+Importer.INPUT_MODE = "mode";
 //# sourceMappingURL=Importer.js.map

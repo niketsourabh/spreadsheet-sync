@@ -1,8 +1,8 @@
 import * as Core from "@actions/core";
-import { Octokit } from "@octokit/rest";
+import {Octokit} from "@octokit/rest";
 import * as GitHub from "@actions/github";
-import { google } from "googleapis"
-import{ createActionAuth } from"@octokit/auth-action"
+import {google} from "googleapis"
+import {createActionAuth} from "@octokit/auth-action"
 
 export class Importer {
 
@@ -11,25 +11,27 @@ export class Importer {
     public static INPUT_SERVICE_ACCOUNT_JSON = "google-api-service-account-credentials"
     public static INPUT_DOCUMENT_ID = "document-id"
     public static INPUT_SHEET_NAME = "sheet-name"
+    public static INPUT_MODE = "mode"
 
     public async start(): Promise<void> {
         try {
-
             Core.startGroup("🚦 Checking Inputs and Initializing...")
             const serviceAccountCredentials = Core.getInput(Importer.INPUT_SERVICE_ACCOUNT_JSON)
             const documentId = Core.getInput(Importer.INPUT_DOCUMENT_ID)
             const sheetName = Core.getInput(Importer.INPUT_SHEET_NAME)
+            const mode = Core.getInput(Importer.INPUT_MODE) || 'all'
+            Core.info("Running mode = " + mode)
             if (!serviceAccountCredentials || !documentId || !sheetName) {
                 throw new Error("🚨 Some Inputs missed. Please check project README.")
             }
             Core.info("Auth with GitHub Token...")
             const authGit = createActionAuth()
             const {token} = await authGit()
-            Core.info("Token: "+  token)
+            Core.info("Token: " + token)
             const octokit = new Octokit({
                 auth: token,
             })
-            
+
             Core.info("Done.")
             Core.endGroup()
 
@@ -80,8 +82,21 @@ export class Importer {
             Core.endGroup()
 
             Core.startGroup(`🔨 Form Issues data for Sheets format...`)
+            Core.info("Count issues = " + issuesData.length)
+
+            issuesData
             var issueSheetsData = [];
             for (const value of issuesData) {
+                if (mode == 'issues') {
+                    if (value.pull_request) {
+                        continue;
+                    }
+                }
+                if (mode == 'milestone_issues') {
+                    if ((!value.milestone || value.milestone.state != 'open') || value.pull_request) {
+                        continue;
+                    }
+                }
                 var labels = []
                 for (const label of value.labels) {
                     labels.push(label.name)
@@ -103,6 +118,7 @@ export class Importer {
                     value.milestone?.due_on,
                     value.milestone?.html_url,
                     value.body,
+                    value.closed_at,
                 ])
             }
             issueSheetsData.forEach(value => {
@@ -120,11 +136,12 @@ export class Importer {
                     majorDimension: "ROWS",
                     range: sheetName + "!A1:1",
                     values: [
-                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI", "Description"]
+                        ["#", "Status", "Type", "Title", "URI", "Labels", "Assignees", "Milestone", "Status", "Deadline", "URI", "Description", "Closed"]
                     ]
                 }
             })
             Core.info("Appending data...")
+            Core.info("Count appending issues = " + issueSheetsData.length)
             await sheets.spreadsheets.values.append({
                 spreadsheetId: documentId,
                 range: sheetName + "!A1:1",
@@ -139,7 +156,8 @@ export class Importer {
             Core.endGroup()
             Core.info("☑️ Done!")
 
-        } catch (error) {
+        } catch
+            (error) {
             Core.setFailed(JSON.stringify(error))
         }
     }
