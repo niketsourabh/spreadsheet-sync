@@ -72,6 +72,8 @@ class Importer {
             Core.info("Done.");
             Core.endGroup();
             Core.startGroup(`🔨 Form Issues data for Sheets format...`);
+            Core.info("Count issues = " + issuesData.length);
+            issuesData;
             var issueSheetsData = [];
             for (const value of issuesData) {
                 if (mode == 'issues' && !value.pull_request) {
@@ -123,6 +125,7 @@ class Importer {
                 }
             });
             Core.info("Appending data...");
+            Core.info("Count appending issues = " + issueSheetsData.length);
             await sheets.spreadsheets.values.append({
                 spreadsheetId: documentId,
                 range: sheetName + "!A1:1",
