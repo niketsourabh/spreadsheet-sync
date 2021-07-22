@@ -11,7 +11,7 @@ export class Importer {
     public static INPUT_SERVICE_ACCOUNT_JSON = "google-api-service-account-credentials"
     public static INPUT_DOCUMENT_ID = "document-id"
     public static INPUT_SHEET_NAME = "sheet-name"
-    public static INPUT_MODE = 'mode'
+    public static INPUT_MODE = "mode"
 
     public async start(): Promise<void> {
         try {
@@ -87,12 +87,16 @@ export class Importer {
             issuesData
             var issueSheetsData = [];
             for (const value of issuesData) {
-                if (mode == 'issues' && !value.hasOwnProperty('pull_request')) {
-                    continue;
+                if (mode == 'issues') {
+                    if (!value.pull_request) {
+                        continue;
+                    }
                 }
                 if (mode == 'milestone_issues') {
-                    if(!value.hasOwnProperty('pull_request') && (value.milestone && value.milestone.state != 'open')) {
-                        continue;
+                    if (!value.pull_request) {
+                        if (!value.milestone || value.milestone.state != 'open') {
+                            continue;
+                        }
                     }
                 }
                 var labels = []
@@ -154,7 +158,8 @@ export class Importer {
             Core.endGroup()
             Core.info("☑️ Done!")
 
-        } catch (error) {
+        } catch
+            (error) {
             Core.setFailed(JSON.stringify(error))
         }
     }

@@ -76,12 +76,16 @@ class Importer {
             issuesData;
             var issueSheetsData = [];
             for (const value of issuesData) {
-                if (mode == 'issues' && !value.hasOwnProperty('pull_request')) {
-                    continue;
+                if (mode == 'issues') {
+                    if (!value.pull_request) {
+                        continue;
+                    }
                 }
                 if (mode == 'milestone_issues') {
-                    if (!value.hasOwnProperty('pull_request') && (value.milestone && value.milestone.state != 'open')) {
-                        continue;
+                    if (!value.pull_request) {
+                        if (!value.milestone || value.milestone.state != 'open') {
+                            continue;
+                        }
                     }
                 }
                 var labels = [];
@@ -153,5 +157,5 @@ Importer.LOG_BULLET_ITEM = "·️";
 Importer.INPUT_SERVICE_ACCOUNT_JSON = "google-api-service-account-credentials";
 Importer.INPUT_DOCUMENT_ID = "document-id";
 Importer.INPUT_SHEET_NAME = "sheet-name";
-Importer.INPUT_MODE = 'mode';
+Importer.INPUT_MODE = "mode";
 //# sourceMappingURL=Importer.js.map
